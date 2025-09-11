@@ -33,7 +33,7 @@ class FloodDatasetCNN(Dataset):
             
         print("----make dataset----")
         
-        if scene == 0:
+        if scene == 0: # synthetic dataset
             for sd in seed:
                 print(" seed ", sd)
                 
@@ -53,7 +53,7 @@ class FloodDatasetCNN(Dataset):
                     temp["e"][i] = dem + wd
                 
                 self.event.append(temp)
-        elif scene == 1:
+        elif scene == 1: # dataset created by Bentivoglio et al. (2023), could not be used in this study
             self.simulation_steps = 96
             ss  = 96
             for sd in seed:
@@ -91,7 +91,7 @@ class FloodDatasetCNN(Dataset):
                 temp["BC"] = [0, 0, 0, 0.5]
                 
                 self.event.append(temp)
-        elif scene == 2:
+        elif scene == 2: # Tous dam break dataset
             for sd in seed:
                 print(" seed ", sd)
                 
@@ -173,7 +173,7 @@ class FloodDatasetCNN(Dataset):
         for i in range(len(sx_vars)):
             d = sx_vars[i]
             sx[i] = self.event[sx_index][d][2-bd:2+nx+bd, 2-bd:2+ny+bd]
-        
+        # boundary condition setting
         if self.sc == 2:
             bc[2] = (self.event[sx_index]["BC"][dx_index] + self.event[sx_index]["BC"][dx_index + tr*ifr])/2/ifr/tr
             tempbc = (self.event[sx_index]["qx"][dx_index][2+nx][13] + self.event[sx_index]["qx"][dx_index + tr*ifr][2+nx][13])/2/ifr/tr
@@ -210,7 +210,7 @@ class FloodDatasetCNN(Dataset):
                     dx1[2][bx][by-k] = bc[3]
             bc2[1] += 1
             
-        if self.augs == True:
+        if self.augs == True: # data augmentation
             # Rotate counterclockwise by 90 degrees
             for i in range(rot):
                 sx  = np.rot90(sx,  1, [1, 2])
@@ -229,7 +229,7 @@ class FloodDatasetCNN(Dataset):
                 for j in range(ifr):
                     dx1[a+j*len(dx_vars), :, :] *= -1
                 dx2[a, :, :] *= -1
-                
+            # flipping
             if flp == 1:
                 sx  = np.flip(sx,  1)
                 dx1 = np.flip(dx1, 1)
